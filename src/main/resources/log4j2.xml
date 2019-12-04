@@ -21,7 +21,6 @@
             <!-- 指定最多保存的文件个数 -->
             <DefaultRolloverStrategy max="20"/>
         </RollingRandomAccessFile>
-        <param name="Encoding" value="UTF-8" />
     </Appenders>
 
     <Loggers>
