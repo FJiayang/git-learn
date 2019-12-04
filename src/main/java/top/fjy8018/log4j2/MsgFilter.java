@@ -1,11 +1,9 @@
 package top.fjy8018.log4j2;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
+import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.core.Filter;
-import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.config.Node;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
@@ -14,13 +12,14 @@ import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.filter.AbstractFilter;
 import org.apache.logging.log4j.message.Message;
 
+
 import java.text.DecimalFormat;
 
 /**
  * @author F嘉阳
  * @date 2019/12/3 17:28
  */
-@Slf4j
+@Log4j2
 @Plugin(name = "MsgFilter", category = Node.CATEGORY, elementType = Filter.ELEMENT_TYPE, printObject = true)
 public class MsgFilter extends AbstractFilter {
 
