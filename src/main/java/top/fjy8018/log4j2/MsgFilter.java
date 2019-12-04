@@ -1,6 +1,7 @@
 package top.fjy8018.log4j2;
 
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.core.Filter;
@@ -19,7 +20,7 @@ import java.text.DecimalFormat;
  * @author F嘉阳
  * @date 2019/12/3 17:28
  */
-@Log4j2
+@Slf4j
 @Plugin(name = "MsgFilter", category = Node.CATEGORY, elementType = Filter.ELEMENT_TYPE, printObject = true)
 public class MsgFilter extends AbstractFilter {
 
