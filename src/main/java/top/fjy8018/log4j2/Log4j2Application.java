@@ -1,13 +1,13 @@
 package top.fjy8018.log4j2;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.util.Random;
 
-@Slf4j
 @SpringBootApplication
 public class Log4j2Application implements CommandLineRunner {
 
@@ -15,7 +15,7 @@ public class Log4j2Application implements CommandLineRunner {
         SpringApplication.run(Log4j2Application.class, args);
     }
 
-
+    private static Logger log = LoggerFactory.getLogger(MsgFilter.class);
 
     @Override
     public void run(String... args) throws Exception {

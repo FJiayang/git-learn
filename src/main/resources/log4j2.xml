@@ -1,48 +1,98 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="off" name="MyApp" packages="top.fjy8018.log4j2">
-    <MsgFilter onMatch="ACCEPT" onMismatch="DENY"/>
-    <Appenders>
-        <!-- 控制台打印日志 -->
-        <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d %-5p (%F:%L) - %m%n" />
-        </Console>
-        <!-- 日志信息输出到文件配置 -->
-        <RollingRandomAccessFile name="ErrorLog"
-                                 fileName="./error.log"
-                                 filePattern="./error.log.%d{yyyy-MM-dd}.gz">
-            <PatternLayout
-                    pattern="%d %-5p (%F:%L) - %m%n"/>
-            <Policies>
-                <!-- TimeBasedTriggeringPolicy指定的size是1，结合起来就是1天生成一个新文件。如果filePattern改成%d{yyyy-MM-dd HH}.gz,此时最小粒度为小时，则每一个小时生成一个文件。 -->
-                <TimeBasedTriggeringPolicy/>
-                <!--  指定当文件体积大于size指定的值时，触发Rolling -->
-                <SizeBasedTriggeringPolicy size="100 MB"/>
-            </Policies>
-            <!-- 指定最多保存的文件个数 -->
-            <DefaultRolloverStrategy max="20"/>
-        </RollingRandomAccessFile>
-    </Appenders>
+        <!-- status="OFF"，可以去掉，它的含义为是否记录log4j2本身的event信息，默认是OFF -->
+<configuration status="OFF" monitorInterval="60">
 
-    <Loggers>
-        <!-- 3rdparty Loggers -->
-        <logger name="org.springframework.core" level="info">
-        </logger>
-        <logger name="org.springframework.beans" level="info">
-        </logger>
-        <logger name="org.springframework.context" level="info">
-        </logger>
-        <logger name="org.springframework.web" level="info">
-        </logger>
-        <logger name="org.springframework.test.context.junit4.SpringJUnit4ClassRunner" level="info">
-        </logger>
-        <!-- 下面的logger需要修改为你的项目根路径，如com.sd -->
-<!--        <logger name="com.fast.ssm" level="debug" includeLocation="true" additivity="false">-->
-<!--            <appender-ref ref="ErrorLog"/>-->
-<!--            <appender-ref ref="Console"/>-->
-<!--        </logger>-->
-        <root level="info">
-            <appender-ref ref="Console"/>
-            <appender-ref ref="ErrorLog"/>
-        </root>
-    </Loggers>
-</Configuration>
+<Properties>
+    <!-- （*必须,各应用需要修改） 部署应用的名称,命名规则 :全部小写字母、中短横线、数字,与微服务命名,disconf中命名一致 -->
+    <property name="APPNAME">efp-report-middle</property>
+    <!-- 应用服务器主机名 -->
+    <property name="APPHOSTNAME">report-middle</property>
+    <!-- （各应用需要修改）部署应用的端口号，用于一台服务器部署多台应用的情况,如果不需要，保持默认 -->
+    <property name="PORT">21481</property>
+    <!-- （各应用需要修改）日志文件本地存放目录路径 建议各个环境跟生产环境统一起来,方便维护 -->
+    <property name="systemLogBaseFolder">./logs/ocm/systemlog</property>
+    <property name="innertimeLogBaseFolder">./logs/ocm/innertimelog</property>
+    <!-- 日志文件名称的前缀部分，以下为建议值 -->
+    <property name="logFileNamePrefix">${APPNAME}-${PORT}</property>
+    <!-- 日志文件最小切割单位 值不做强制要求，建议300MB -->
+    <property name="every_file_size">50M</property>
+    <!-- *必须并强制遵守 日志文件的编码 -->
+    <property name="log_charset">UTF-8</property>
+    <!-- *必须并强制遵守 日志格式说明： -->
+    <property name="systemlog_pattern">{"Time":"%d{yyyy-MM-dd HH:mm:ss.SSS}","ThreadID":"%t","APPName":"${APPNAME}","Type":"%logger","LineNUM":"%L","Method":"%M","Level":"%p","$(Msg_name1)":"%m"}%n</property>
+    <property name="innertimelog_pattern">{"Time":"%d{yyyy-MM-dd HH:mm:ss.SSS}","TrxID":"%X{CnsmrTxnCd}","GlblSrlNo":"%X{GlblSrlNo}","ThreadID":"%t","APPName":"${APPNAME}","Type":"%logger","LineNUM":"%L","Method":"%M","Level":"%p","Res":"%m"}%n</property>
+</Properties>
+<MsgFilter onMatch="ACCEPT" onMismatch="DENY"/>
+<appenders>
+    <!-- 用来控制台输出 -->
+    <Console name="console" target="SYSTEM_OUT">
+        <PatternLayout pattern="${systemlog_pattern}" />
+    </Console>
+
+    <!-- 以下是建议的日志压缩包目录的格式名称 -->
+    <RollingRandomAccessFile name="all" filePattern="${systemLogBaseFolder}/${APPHOSTNAME}/%d{yyyyMMdd}.%i.log" fileName="${systemLogBaseFolder}/${APPHOSTNAME}/all.log" immediateFlush="true">
+        <!-- 日志输出格式 -->
+        <PatternLayout charset="${log_charset}" pattern="${systemlog_pattern}" />
+        <!-- 以下是日志压缩包目录的建议格式名称 建议1天归档依次，压缩文件上线建议为200,这里预估每个磁盘存储空间200G左右，每个压缩包最大值200MB -->
+        <Policies>
+            <TimeBasedTriggeringPolicy modulate="true" interval="1" />
+            <SizeBaseDTriggeringPolicy size="${every_file_size}" />
+        </Policies>
+        <DefaultRolloverStrategy max="1000" />
+        <Filters>
+            <!-- 显示所有信息 -->
+            
+            <ThresholdFilter onMismatch="DENY" onMatch="ACCEPT" level="trace" />
+        </Filters>
+    </RollingRandomAccessFile>
+
+    <!-- error File Config -->
+    <RollingRandomAccessFile name="errorLog" filePattern="${systemLogBaseFolder}/${APPHOSTNAME}/error.%d{yyyyMMdd}.%i.log" fileName="${systemLogBaseFolder}/${APPHOSTNAME}/error.log" immediateFlush="true">
+        <PatternLayout charset="${log_charset}" pattern="${systemlog_pattern}" />
+        <Policies>
+            <TimeBasedTriggeringPolicy modulate="true" interval="1" />
+            <SizeBaseDTriggeringPolicy size="${every_file_size}" />
+        </Policies>
+        <Filters>
+            <!-- 只显示error信息 -->
+            
+            <ThresholdFilter onMismatch="DENY" onMatch="ACCEPT" level="error" />
+        </Filters>
+    </RollingRandomAccessFile>
+
+    <RollingRandomAccessFile name="actionflow" fileName="${innertimeLogBaseFolder}/${APPHOSTNAME}/actionflow.log" filePattern="${innertimeLogBaseFolder}/${APPHOSTNAME}/actionflow.%d{yyyyMMdd}.%i.log" immediateFlush="true">
+        <!-- 日志输出格式 -->
+        <PatternLayout charset="${log_charset}" pattern="${innertimelog_pattern}" />
+        <!-- 以下是日志压缩包目录的建议格式名称 建议1天归档依次，压缩文件上线建议为200,这里预估每个磁盘存储空间200G左右，每个压缩包最大值200MB -->
+        <Policies>
+            <TimeBasedTriggeringPolicy modulate="true" interval="1" />
+            <SizeBaseDTriggeringPolicy size="${every_file_size}" />
+        </Policies>
+        <DefaultRolloverStrategy max="1000" />
+        <Filters>
+            <!-- 显示所有信息 -->
+            
+            <ThresholdFilter onMismatch="DENY" onMatch="ACCEPT" level="trace" />
+        </Filters>
+    </RollingRandomAccessFile>
+</appenders>
+
+<loggers>
+    <Logger name="com.irdstudio.basic.framework.core.dubbo.filter" level="debug" additivity="true">
+        <AppenderRef ref="actionflow" />
+    </Logger>
+
+    <!-- 各应用按实际情况自行定义相关类的输出级别 -->
+    <AsyncLogger name="top.fjy8018.log4j2" level="debug" />
+
+    <AsyncLogger name="org.springframework" level="info" />
+
+    <asyncRoot level="debug" includeLocation="true">
+        <!-- 各应用自行调整，日志输出至文件，自动按时间、按文件大小进行归档 ,生产环境调默认为INFO，如有特殊需求，在disconf动态调级 -->
+        <appender-ref level="debug" ref="all" />
+        <!-- 日志输出至Console，仅在IDE开发时打开方便开发人员，部署到服务器之后必须置为OFF，level设置为OFF表示禁用Console控制台日志输出 -->
+        <appender-ref level="trace" ref="console" />
+        <!-- 异常日志，不用改动 -->
+        <appender-ref level="error" ref="errorLog" />
+    </asyncRoot>
+</loggers>
+</configuration>

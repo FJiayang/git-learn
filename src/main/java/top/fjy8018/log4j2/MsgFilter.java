@@ -1,24 +1,25 @@
 package top.fjy8018.log4j2;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.core.Filter;
-import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.config.Node;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.filter.AbstractFilter;
 import org.apache.logging.log4j.message.Message;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author F嘉阳
  * @date 2019/12/3 17:28
  */
-@Slf4j
 @Plugin(name = "MsgFilter", category = Node.CATEGORY, elementType = Filter.ELEMENT_TYPE, printObject = true)
 public class MsgFilter extends AbstractFilter {
+
+    private static Logger log = LoggerFactory.getLogger(MsgFilter.class);
 
 //    private static final Long MAX_LENGTH = 5120L;
 
@@ -35,12 +36,12 @@ public class MsgFilter extends AbstractFilter {
     }
 
     @Override
-    public Result filter(Logger logger, Level level, Marker marker, Message msg, Throwable t) {
-        return filter(logger,level,marker,msg.toString());
+    public Result filter(org.apache.logging.log4j.core.Logger logger, Level level, Marker marker, Message msg, Throwable t) {
+        return filter(logger, level, marker, msg, t);
     }
 
     @Override
-    public Result filter(Logger logger, Level level, Marker marker, String msg, Object... params) {
+    public Result filter(org.apache.logging.log4j.core.Logger logger, Level level, Marker marker, String msg, Object... params) {
         if (msg.length() > MAX_LENGTH){
             msg = msg.substring(0,10);
             log.info("新日志： {}",msg);
