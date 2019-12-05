@@ -21,9 +21,7 @@ public class MsgFilter extends AbstractFilter {
 
     private static Logger log = LoggerFactory.getLogger(MsgFilter.class);
 
-//    private static final Long MAX_LENGTH = 5120L;
-
-    private static final Integer MAX_LENGTH = 5000;
+    private static final Integer MAX_LENGTH = 1000;
 
     private MsgFilter(Result onMatch, Result onMismatch) {
         super(onMatch, onMismatch);
@@ -43,7 +41,7 @@ public class MsgFilter extends AbstractFilter {
     @Override
     public Result filter(org.apache.logging.log4j.core.Logger logger, Level level, Marker marker, String msg, Object... params) {
         if (msg.length() > MAX_LENGTH){
-            msg = msg.substring(0,10);
+            msg = msg.substring(0,MAX_LENGTH);
             log.info("新日志： {}",msg);
             return onMismatch;
         }

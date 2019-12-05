@@ -6,6 +6,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.util.Arrays;
 import java.util.Random;
 
 @SpringBootApplication
@@ -19,20 +20,12 @@ public class Log4j2Application implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        String randomString = getRandomString(50005);
-        log.info("生成的长度： "+randomString.length());
-        log.info(randomString);
-    }
-
-
-    public String getRandomString(int length) {
-        String str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        Random random = new Random();
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < length; i++) {
-            int number = random.nextInt(str.length());
-            sb.append(str.charAt(number));
+        try {
+            int a = 1;
+            int b = 0;
+            int c = a/b;
+        }catch (ArithmeticException e){
+            log.error(Arrays.toString(e.getStackTrace()));
         }
-        return sb.toString();
     }
 }
