@@ -13,6 +13,7 @@ import org.apache.logging.log4j.core.filter.AbstractFilter;
 import org.apache.logging.log4j.message.Message;
 
 /**
+ * 过滤器
  * @author F嘉阳
  * @date 2019/12/3 17:28
  */
